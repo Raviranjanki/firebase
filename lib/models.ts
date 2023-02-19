@@ -94,6 +94,24 @@ export class User {
       updatedAt: this.updatedAt,
     });
   }
+  
+  private validate(data: any) {
+    const { name, email, password } = data;
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new Error("Invalid email address");
+    }
+
+    if (!password || typeof password !== "string" || password.length < 6) {
+      throw new Error("Invalid password: must be at least 6 characters long");
+    }
+
+    return {
+      name: name?.trim(),
+      email: email.trim(),
+      password: password.trim(),
+    };
+  }
 
   async delete(): Promise<void> {
     const userRef = firestore.collection("users").doc(this.id);
