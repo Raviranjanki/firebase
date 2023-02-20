@@ -30,3 +30,38 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 export default withAuth(handler, { allowGuest: true });
+
+
+
+/////////////////////////////////////////////////////////////////
+
+async function fetchWithGetParams(url: string, params: Record<string, string> = {}): Promise<any> {
+  const queryParams = new URLSearchParams();
+  Object.keys(params).forEach((key) => queryParams.append(key, params[key]));
+
+  const response = await fetch(`${url}?${queryParams}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  const data = await response.json();
+  if (response.ok) {
+    return data;
+  } else {
+    throw new Error(data.error.message);
+  }
+}
+
+async function getUserData(userId: string): Promise<any> {
+  const url = `/api/users/${userId}`;
+  const params = { format: 'json' };
+  try {
+    const response = await fetchWithGetParams(url, params);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+}
+
